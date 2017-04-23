@@ -107,6 +107,11 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
 
     }
 
+    @Override
+    public void refreshAll() {
+
+    }
+
     private void getJsonFromServer(final GetMoviesCallback callback, String url) {
         Request request = new Request.Builder().url(url).build();
 

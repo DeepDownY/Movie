@@ -62,6 +62,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     public void start() {
         loaderManager.initLoader(MOVIES_LOADER,null,this);
 //        loadMovies(LoadSourceType.LOCAL);
+
     }
 
     @Override
@@ -87,7 +88,11 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @Override
     public void setFiltering(MovieFilter movieFilter) {
         this.movieFilter = movieFilter;
-//        loaderManager.restartLoader(MOVIES_LOADER,null,this);
+        if(loaderManager.getLoader(MOVIES_LOADER)!=null){
+            loaderManager.restartLoader(MOVIES_LOADER,null,this);
+        }else loaderManager.initLoader(MOVIES_LOADER,null,this);
+
+//        loadMovies(LoadSourceType.LOCAL);
     }
 
     @Override
@@ -129,7 +134,8 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void onDataEmpty() {
-
+        mMoviesView.setLoadingIndicator(false);
+        mMoviesView.showMovies(null);
     }
 
     @Override
@@ -151,6 +157,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i("DSF", "onLoadFinished: ");
         if(data != null){
             if(data.moveToLast()){
                 onDataLoaded(data);

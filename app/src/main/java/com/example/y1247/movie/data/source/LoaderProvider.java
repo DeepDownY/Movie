@@ -59,7 +59,7 @@ public class LoaderProvider implements Serializable {
                 break;
             case COLLECTED:
                 selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG + "= ? ";
-                selectionArgs = new String[]{String.valueOf(0)};
+                selectionArgs = new String[]{String.valueOf(1)};
                 break;
         }
 

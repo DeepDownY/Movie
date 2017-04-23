@@ -66,6 +66,7 @@ public class MoviesRepository implements MoviesDataSource{
     }
 
     private void refreshLocalDataSource(List<Movie> movies) {
+
         mMoviesLocalDataSource.saveMovies(movies);
     }
 
@@ -114,6 +115,11 @@ public class MoviesRepository implements MoviesDataSource{
     @Override
     public void deleteAllMovies() {
         mMoviesLocalDataSource.deleteAllMovies();
+    }
+
+    @Override
+    public void refreshAll() {
+
     }
 
     public interface LoadDataCallback {

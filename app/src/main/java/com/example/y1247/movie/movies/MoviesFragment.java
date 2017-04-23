@@ -47,9 +47,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
 
     private SharedPreferences.Editor editor;
 
-
     int loadflag;
-
 
     @Override
     public void onResume() {
@@ -168,11 +166,17 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
 
     @Override
     public void showMovies(Cursor movies) {
-        if(movies.moveToFirst()) {
-            adapter.swapCursor(movies);
-            lv_Movies.setVisibility(View.VISIBLE);
-            mNoMovieView.setVisibility(View.GONE);
-        }else {
+        if(movies!=null) {
+            if (movies.moveToFirst()) {
+                adapter.swapCursor(movies);
+                adapter.notifyDataSetChanged();
+                lv_Movies.setVisibility(View.VISIBLE);
+                mNoMovieView.setVisibility(View.GONE);
+            } else {
+                lv_Movies.setVisibility(View.GONE);
+                mNoMovieView.setVisibility(View.VISIBLE);
+            }
+        }else{
             lv_Movies.setVisibility(View.GONE);
             mNoMovieView.setVisibility(View.VISIBLE);
         }
@@ -207,6 +211,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+//                adapter.swapCursor(null);
                 switch (item.getItemId()){
                     case R.id.filter_all:
                         mPresenter.setFiltering(MovieFilter.from(MoviesFilterType.ALL));

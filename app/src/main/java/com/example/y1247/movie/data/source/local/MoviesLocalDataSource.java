@@ -96,4 +96,9 @@ public class MoviesLocalDataSource implements MoviesDataSource {
     public void deleteAllMovies() {
         mContentResolver.delete(MoviesPersistenceContract.MovieEntry.buildMoviesUri(), null, null);
     }
+
+    @Override
+    public void refreshAll() {
+
+    }
 }

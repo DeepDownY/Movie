@@ -39,4 +39,6 @@ public interface MoviesDataSource {
     void unCollectMovie(@NonNull String id);
 
     void deleteAllMovies();
+
+    void refreshAll();
 }
