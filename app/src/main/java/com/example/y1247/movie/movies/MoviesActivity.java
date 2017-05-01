@@ -75,6 +75,8 @@ public class MoviesActivity extends AppCompatActivity {
                 movieFilter,
                 sortFilter
         );
+
+        moviesPresenter.start();
     }
 
     @Override

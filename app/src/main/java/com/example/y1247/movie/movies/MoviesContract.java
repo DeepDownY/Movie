@@ -8,6 +8,8 @@ import com.example.y1247.movie.BaseView;
 import com.example.y1247.movie.data.Movie;
 import com.example.y1247.movie.data.source.LoadSourceType;
 
+import java.util.List;
+
 /**
  * Created by y1247 on 2017/3/13.
  */
@@ -16,7 +18,7 @@ public interface MoviesContract {
     interface View extends BaseView<Presenter>{
         void setLoadingIndicator(boolean active);
 
-        void showMovies(Cursor movies);
+        void showMovies(List<Movie> data);
 
         void showMoviesDetail(Movie movie);
 
@@ -45,6 +47,8 @@ public interface MoviesContract {
         void setSortType(SortFilter sortType);
 
         void collectMovie(Movie movie);
+
+        void unCollectMovie(Movie movie);
 
         SortFilter getSortType();
 

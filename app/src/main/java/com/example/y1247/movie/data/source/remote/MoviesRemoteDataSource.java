@@ -64,12 +64,12 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
             case POP:
                 url = URL + POP +
                         "?language=zh&page=" + String.valueOf(page) +
-                        "&&api_key=" + API_KEY;
+                        "&api_key=" + API_KEY;
                 break;
             case RATE:
                 url = URL + RATE +
                         "?language=zh&page=" + String.valueOf(page) +
-                        "&&api_key=" + API_KEY;
+                        "&api_key=" + API_KEY;
                 break;
             case LOCAL:
                 return;
@@ -78,7 +78,51 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     }
 
     @Override
-    public void getMovie(@NonNull String id, @NonNull GetMovieCallback callback) {
+    public void getMovie(@NonNull String id, @NonNull final GetMovieCallback callback) {
+        String url = URL + id + "?language=zh&api_key=" + API_KEY;
+//        Log.i("DSF", "getMovie: " + id);
+        final Movie m = new Movie();
+        Request request = new Request.Builder().url(url).build();
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what){
+                    case -1:
+                        callback.onDataNotAvailable();
+                        break;
+                    case 1:
+                        callback.onMovieLoaded((Movie) msg.obj);
+                        break;
+                }
+            }
+        };
+
+        final Message msg = handler.obtainMessage();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                msg.what = -1;
+                msg.sendToTarget();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body().string());
+
+                    m.setVote_average(jsonObject.getDouble("vote_average"));
+                    m.setPopularity(jsonObject.getDouble("popularity"));
+                    m.setRuntime(jsonObject.getInt("runtime"));
+
+                    msg.obj = m;
+                    msg.what = 1;
+                    msg.sendToTarget();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
@@ -134,7 +178,6 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.i("123", "onFailure: ");
                 msg.what = -1;
                 msg.sendToTarget();
             }
@@ -145,7 +188,6 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
                 try {
                     JSONObject jsonObject = new JSONObject(response.body().string());
 
-                    Log.i("Movie", "onResponse: " + jsonObject.toString());
                     msg.obj = JsonToList(jsonObject);
                     msg.what = 1;
                     msg.sendToTarget();

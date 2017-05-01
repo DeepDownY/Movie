@@ -33,7 +33,8 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                     MoviesPersistenceContract.MovieEntry.COLUMN_NAME_OVERVIEW + TEXT_TYPE + COMMA_SEP +
                     MoviesPersistenceContract.MovieEntry.COLUMN_NAME_POPULARITY + DOUBLE_TYPE + COMMA_SEP +
                     MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RELEASE_DATE + TEXT_TYPE + COMMA_SEP +
-                    MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG + INTEGER_TYPE +
+                    MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG + INTEGER_TYPE + COMMA_SEP +
+                    MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RUNTIME + INTEGER_TYPE +
                     " )";
 
 

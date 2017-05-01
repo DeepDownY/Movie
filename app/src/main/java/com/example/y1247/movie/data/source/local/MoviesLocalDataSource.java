@@ -2,6 +2,7 @@ package com.example.y1247.movie.data.source.local;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -10,6 +11,7 @@ import com.example.y1247.movie.data.source.LoadSourceType;
 import com.example.y1247.movie.data.source.MovieValues;
 import com.example.y1247.movie.data.source.MoviesDataSource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
@@ -38,7 +40,14 @@ public class MoviesLocalDataSource implements MoviesDataSource {
 
     @Override
     public void getMovies(@NonNull GetMoviesCallback callback, LoadSourceType extras,int page) {
-
+        List<Movie> ls = new ArrayList<>();
+        Cursor c = mContentResolver.query(MoviesPersistenceContract.MovieEntry.buildMoviesUri(),null,null,null,null);
+        if(c!=null){
+            while (c.moveToNext()){
+                ls.add(Movie.from(c));
+            }
+        }
+        callback.onMoviesLoaded(ls);
     }
 
     @Override
@@ -69,7 +78,7 @@ public class MoviesLocalDataSource implements MoviesDataSource {
         ContentValues values = new ContentValues();
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG,1);
 
-        String selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID + " LIKE ?";
+        String selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID + " = ?";
         String[] selectionArgs = {id};
 
         int rows = mContentResolver.update(MoviesPersistenceContract.MovieEntry.buildMoviesUri(),values,selection,selectionArgs);
@@ -84,7 +93,7 @@ public class MoviesLocalDataSource implements MoviesDataSource {
         ContentValues values = new ContentValues();
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG,0);
 
-        String selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID + " LIKE ?";
+        String selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID + " = ?";
         String[] selectionArgs = {id};
 
         int rows = mContentResolver.update(MoviesPersistenceContract.MovieEntry.buildMoviesUri(),values,selection,selectionArgs);

@@ -4,11 +4,18 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,9 +23,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,7 +38,14 @@ import android.widget.Toast;
 import com.example.y1247.movie.R;
 import com.example.y1247.movie.data.Movie;
 import com.example.y1247.movie.data.source.LoadSourceType;
+import com.example.y1247.movie.movie.MovieActivity;
+import com.github.lzyzsd.randomcolor.RandomColor;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * Created by y1247 on 2017/3/15.
@@ -39,11 +55,13 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
 
     private MoviesContract.Presenter mPresenter;
 
-    private ListView lv_Movies;
+    private RecyclerView rv_Movies;
     private LinearLayout mNoMovieView;
     SwipeRefreshLayout sl_Movies;
 
-    private MovieCursorAdapter adapter;
+    private MoviesAdapter adapter;
+
+//    private MovieCursorAdapter adapter;
 
     private SharedPreferences.Editor editor;
 
@@ -52,7 +70,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start();
+//        mPresenter.start();
     }
 
     ItemListener itemListener = new ItemListener() {
@@ -64,6 +82,11 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
         @Override
         public void onCollectClick(Movie movie) {
             mPresenter.collectMovie(movie);
+        }
+
+        @Override
+        public void onUnCollectClick(Movie movie) {
+            mPresenter.unCollectMovie(movie);
         }
     };
 
@@ -108,18 +131,26 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
         View root = inflater.inflate(R.layout.movies_frag,container,false);
 
 
-        lv_Movies = (ListView) root.findViewById(R.id.movies_list);
+        rv_Movies = (RecyclerView) root.findViewById(R.id.movies_list);
         mNoMovieView = (LinearLayout) root.findViewById(R.id.noMovies);
-        adapter = new MovieCursorAdapter(getActivity(),itemListener);
 
-        lv_Movies.setAdapter(adapter);
+        adapter = new MoviesAdapter(getActivity(),itemListener);
+
+        rv_Movies.setLayoutManager(new GridLayoutManager(getActivity(),2,GridLayoutManager.VERTICAL,false));
+
+        rv_Movies.setAdapter(adapter);
+
+        final Picasso picasso = Picasso.with(getActivity());
+
+//        adapter = new MovieCursorAdapter(getActivity(),itemListener);
+
+//        lv_Movies.setAdapter(adapter);
 
         sl_Movies = (SwipeRefreshLayout) root.findViewById(R.id.sl_movies);
         sl_Movies.setColorSchemeColors(
                 ContextCompat.getColor(getActivity(), R.color.colorPrimary),
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
-
 
         sl_Movies.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -137,6 +168,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
 
         SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(getActivity());
         editor = setting.edit();
+        editor.apply();
 
         return root;
     }
@@ -165,32 +197,33 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
     }
 
     @Override
-    public void showMovies(Cursor movies) {
-        if(movies!=null) {
-            if (movies.moveToFirst()) {
-                adapter.swapCursor(movies);
-                adapter.notifyDataSetChanged();
-                lv_Movies.setVisibility(View.VISIBLE);
-                mNoMovieView.setVisibility(View.GONE);
-            } else {
-                lv_Movies.setVisibility(View.GONE);
-                mNoMovieView.setVisibility(View.VISIBLE);
-            }
-        }else{
-            lv_Movies.setVisibility(View.GONE);
-            mNoMovieView.setVisibility(View.VISIBLE);
-        }
+    public void showMovies(List<Movie> data) {
+        adapter.setData(data);
+//        if(movies!=null) {
+//            if (movies.moveToFirst()) {
+////                adapter.swapCursor(movies);
+////                adapter.notifyDataSetChanged();
+//                lv_Movies.setVisibility(View.VISIBLE);
+//                mNoMovieView.setVisibility(View.GONE);
+//            } else {
+//                lv_Movies.setVisibility(View.GONE);
+//                mNoMovieView.setVisibility(View.VISIBLE);
+//            }
+//        }else{
+//            lv_Movies.setVisibility(View.GONE);
+//            mNoMovieView.setVisibility(View.VISIBLE);
+//        }
     }
 
     @Override
     public void showMoviesDetail(Movie movie) {
-
+        MovieActivity.StarActivity(getActivity(),movie);
     }
 
     @Override
     public void showNoMovies() {
         mNoMovieView.setVisibility(View.VISIBLE);
-        lv_Movies.setVisibility(View.GONE);
+        rv_Movies.setVisibility(View.GONE);
     }
 
     @Override
@@ -251,76 +284,230 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
         Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
     }
 
-    private static class MovieCursorAdapter extends CursorAdapter{
+//    private static class MovieCursorAdapter extends CursorAdapter{
+//
+//        private final ItemListener itemListener;
+//
+//        public MovieCursorAdapter(Context context,ItemListener itemListener) {
+//            super(context, null, 0);
+//            this.itemListener = itemListener;
+//        }
+//
+//        @Override
+//        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+//            View view = LayoutInflater.from(context)
+//                    .inflate(R.layout.item_movies,parent,false);
+//            ViewHolder viewHolder = new ViewHolder(view);
+//            view.setTag(viewHolder);
+//
+//            return view;
+//        }
+//
+//        @Override
+//        public void bindView(View view, Context context, Cursor cursor) {
+//            ViewHolder viewHolder = (ViewHolder) view.getTag();
+//
+//            final Movie movie = Movie.from(cursor);
+//
+//            Picasso.with(view.getContext())
+//                    .load(Movie.beginUrl + movie.getBackdrop_path())
+//                    .placeholder(R.mipmap.ic_launcher)
+//                    .into(viewHolder.iv_moviePic);
+//
+//            String temp = String.valueOf(movie.getVote_average()) + "/ 10";
+//
+//            viewHolder.tv_MovieName.setText(movie.getTitle());
+//            viewHolder.tv_movieVote.setText(temp);
+//
+//            if(movie.getSave_flag()==1){
+//                viewHolder.imageButton.setActivated(true);
+//            } else viewHolder.imageButton.setActivated(false);
+//
+//            viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Log.i("DSF", "onClick: " + movie.getSave_flag());
+//                    if(movie.getSave_flag()==1){
+//                        v.setActivated(false);
+//                        itemListener.onUnCollectClick(movie);
+//                    }else {
+//                        v.setActivated(true);
+//                        itemListener.onCollectClick(movie);
+//                    }
+//                }
+//            });
+//
+//
+//
+//            viewHolder.rowView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    itemListener.onClick(movie);
+//                }
+//            });
+//
+//
+//
+//
+//        }
+//
+//        public static class ViewHolder {
+//            public final View rowView;
+//            public final TextView tv_MovieName;
+//            public final TextView tv_movieVote;
+//            public final ImageView iv_moviePic;
+//            public final ImageView imageButton;
+//
+//            public ViewHolder(View view) {
+//                rowView = view;
+//                iv_moviePic = (ImageView) view.findViewById(R.id.iv_movieImg);
+//                tv_MovieName = (TextView) view.findViewById(R.id.tv_movieName);
+//                tv_movieVote = (TextView) view.findViewById(R.id.tv_movieVote);
+//                imageButton = (ImageView) view.findViewById(R.id.iv_collection);
+//            }
+//        }
+//    }
 
-        private final ItemListener itemListener;
+    class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.Holder>{
 
-        public MovieCursorAdapter(Context context,ItemListener itemListener) {
-            super(context, null, 0);
+        List<Movie> ls;
+        Context context;
+        private ItemListener itemListener;
+
+        public MoviesAdapter(Context context,ItemListener itemListener) {
             this.itemListener = itemListener;
+            this.context = context;
+            ls = new ArrayList<>();
+        }
+
+        public void setData(List<Movie> data){
+            this.ls = data;
+//            Log.i("DSF", "setData: " + data.size());
+            this.notifyDataSetChanged();
+        }
+
+
+        @Override
+        public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_movies, parent,
+                    false);
+            return new Holder(view);
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = LayoutInflater.from(context)
-                    .inflate(R.layout.item_movie,parent,false);
-            ViewHolder viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
+        public void onBindViewHolder(final Holder holder, int position) {
+            final Movie movie = ls.get(position);
+//            Handler handle = new Handler(){
+//                @Override
+//                public void handleMessage(Message msg) {
+//                    switch (msg.what){
+//                        case 1:
+//                            Bitmap bitmap = (Bitmap) msg.obj;
+//                            Palette.Builder builder = Palette.from(bitmap);
+//                            holder.iv_moviePic.setImageBitmap(bitmap);
+//                            builder.generate(new Palette.PaletteAsyncListener() {
+//                                @Override
+//                                public void onGenerated(Palette palette) {
+//                                    Palette.Swatch vibrant = palette.getVibrantSwatch();
+//                                    holder.rowView.setBackgroundColor(vibrant.getRgb());
+//                                    holder.tv_movieVote.setTextColor(vibrant.getTitleTextColor());
+//                                    holder.tv_movieVote.setTextColor(vibrant.getTitleTextColor());
+//                                }
+//                            });
+//                    }
+//                }
+//            };
+//
+//            final Message msg = handle.obtainMessage();
+//            new Thread(){
+//                @Override
+//                public void run() {
+//                    try {
+//                        Bitmap b = Picasso.with(context)
+//                                .load(Movie.beginUrl + movie.getPoster_path()).get();
+//                        msg.obj = b;
+//                        msg.what = 1;
+//                        msg.sendToTarget();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }.run();
 
-            return view;
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-            final Movie movie = Movie.from(cursor);
-
-            Picasso.with(view.getContext())
-                    .load(Movie.beginUrl + movie.getBackdrop_path())
+            Picasso.with(context)
+                    .load(Movie.beginUrl + movie.getPoster_path())
+                    .tag("Touch Listener")
                     .placeholder(R.mipmap.ic_launcher)
-                    .into(viewHolder.iv_moviePic);
+                    .into(holder.iv_moviePic);
+
+//            Bitmap obmp = Bitmap.createBitmap(holder.iv_moviePic.getDrawingCache());
+//
+//            Palette.Builder builder = Palette.from(obmp);
+//                            builder.generate(new Palette.PaletteAsyncListener() {
+//                                @Override
+//                                public void onGenerated(Palette palette) {
+//                                    Palette.Swatch vibrant = palette.getVibrantSwatch();
+//                                    holder.rowView.setBackgroundColor(vibrant.getRgb());
+//                                    holder.tv_movieVote.setTextColor(vibrant.getTitleTextColor());
+//                                    holder.tv_movieVote.setTextColor(vibrant.getTitleTextColor());
+//                                }
+//                            });
+
+//            RandomColor randomColor = new RandomColor();
+//            int color = randomColor.randomColor();
+//            Log.i("DSF", "onBindViewHolder: " + color);
+
+//            holder.rowView.setBackgroundColor(Color.parseColor(String.valueOf(color)));
 
             String temp = String.valueOf(movie.getVote_average()) + "/ 10";
-
-            viewHolder.tv_MovieName.setText(movie.getTitle());
-            viewHolder.tv_movieVote.setText(temp);
-            if(movie.getSave_flag()!=0){
-                viewHolder.imageButton.setBackgroundResource(R.drawable.star_outline);
-            }
-
-            viewHolder.rowView.setOnClickListener(new View.OnClickListener() {
+            holder.tv_MovieName.setText(movie.getTitle());
+            holder.tv_movieVote.setText(temp);
+            if(movie.getSave_flag()==1){
+                holder.imageButton.setActivated(true);
+            } else holder.imageButton.setActivated(false);
+            holder.imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemListener.onClick(movie);
+                    if(movie.getSave_flag()==1){
+                        v.setActivated(false);
+                        itemListener.onUnCollectClick(movie);
+                    }else {
+                        v.setActivated(true);
+                        itemListener.onCollectClick(movie);
+                    }
                 }
             });
-
-            viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+            holder.rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemListener.onCollectClick(movie);
+                    mPresenter.openMovieDetails(movie);
                 }
             });
-
-
         }
 
-        public static class ViewHolder {
-            public final View rowView;
-            public final TextView tv_MovieName;
-            public final TextView tv_movieVote;
-            public final ImageView iv_moviePic;
-            public final ImageButton imageButton;
+        @Override
+        public int getItemCount() {
+            if(ls==null) return 0;
+            return ls.size();
+        }
 
-            public ViewHolder(View view) {
-                rowView = view;
+        class Holder extends RecyclerView.ViewHolder {
+            public LinearLayout rowView;
+            public TextView tv_MovieName;
+            public TextView tv_movieVote;
+            public ImageView iv_moviePic;
+            public ImageView imageButton;
+
+            public Holder(View view) {
+                super(view);
+                rowView = (LinearLayout) view.findViewById(R.id.ll_itemLayout);
                 iv_moviePic = (ImageView) view.findViewById(R.id.iv_movieImg);
                 tv_MovieName = (TextView) view.findViewById(R.id.tv_movieName);
                 tv_movieVote = (TextView) view.findViewById(R.id.tv_movieVote);
-                imageButton = (ImageButton) view.findViewById(R.id.ib_collection);
+                imageButton = (ImageView) view.findViewById(R.id.iv_collection);
             }
         }
+
     }
 
     public interface ItemListener{
@@ -328,6 +515,8 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
         void onClick(Movie movie);
 
         void onCollectClick(Movie movie);
+
+        void onUnCollectClick(Movie movie);
     }
 
 }

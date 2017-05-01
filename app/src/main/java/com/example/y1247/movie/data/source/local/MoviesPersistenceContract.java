@@ -40,6 +40,7 @@ public class MoviesPersistenceContract {
         public static final String COLUMN_NAME_POPULARITY = "popularity";
         public static final String COLUMN_NAME_RELEASE_DATE = "release_date";
         public static final String COLUMN_NAME_SAVE_FLAG = "save_flag";
+        public static final String COLUMN_NAME_RUNTIME = "runtime";
         public static final Uri CONTENT_MOVIE_URI = BASE_CONTENT_URI.buildUpon().appendPath(TABLE_NAME).build();
         public static String[] MOVIES_COLUMNS = new String[]{
                 MovieEntry._ID,
@@ -51,7 +52,8 @@ public class MoviesPersistenceContract {
                 MovieEntry.COLUMN_NAME_OVERVIEW,
                 MovieEntry.COLUMN_NAME_POPULARITY,
                 MovieEntry.COLUMN_NAME_RELEASE_DATE,
-                MovieEntry.COLUMN_NAME_SAVE_FLAG
+                MovieEntry.COLUMN_NAME_SAVE_FLAG,
+                MovieEntry.COLUMN_NAME_RUNTIME
         };
 
         public static  Uri buildMoviesUriWith(long id){

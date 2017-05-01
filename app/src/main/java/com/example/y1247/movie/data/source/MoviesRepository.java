@@ -49,11 +49,15 @@ public class MoviesRepository implements MoviesDataSource{
                 break;
             case POP:
             case RATE:
-                Log.i("DSF", "getMovies: " + extras);
                 mMoviesRemoteDataSource.getMovies(new GetMoviesCallback() {
                     @Override
-                    public void onMoviesLoaded(List<Movie> movies) {
-                        refreshLocalDataSource(movies);
+                    public void onMoviesLoaded(final List<Movie> movies) {
+                        new Thread(){
+                            @Override
+                            public void run() {
+                                refreshLocalDataSource(movies);
+                            }
+                        }.run();
                         callback.onMoviesLoaded(movies);
                     }
 
@@ -119,11 +123,42 @@ public class MoviesRepository implements MoviesDataSource{
 
     @Override
     public void refreshAll() {
+        new Thread(){
+            @Override
+            public void run() {
+//                Log.i("DSF", "run: ");
+                mMoviesLocalDataSource.getMovies(new GetMoviesCallback() {
+                    @Override
+                    public void onMoviesLoaded(List<Movie> movies) {
+                        for (final Movie m: movies) {
+//                            Log.i("DSF", "onMoviesLoaded: " + m.getTitle());
+                            mMoviesRemoteDataSource.getMovie(String.valueOf(m.getId()), new GetMovieCallback() {
+                                @Override
+                                public void onMovieLoaded(Movie movie) {
+                                    m.setPopularity(movie.getPopularity());
+                                    m.setVote_average(movie.getVote_average());
+                                    mMoviesLocalDataSource.saveMovie(m);
+                                }
 
+                                @Override
+                                public void onDataNotAvailable() {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+
+                    }
+                },null,0);
+            }
+        }.run();
     }
 
     public interface LoadDataCallback {
-        void onDataLoaded(Cursor data);
+        void onDataLoaded(List<Movie> data);
 
         void onDataEmpty();
 

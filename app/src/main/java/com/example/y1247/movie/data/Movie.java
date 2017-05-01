@@ -3,6 +3,7 @@ package com.example.y1247.movie.data;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.y1247.movie.data.source.local.MoviesPersistenceContract;
 
@@ -11,7 +12,8 @@ import com.example.y1247.movie.data.source.local.MoviesPersistenceContract;
  */
 
 public class Movie implements Parcelable{
-    public static String beginUrl = "http://image.tmdb.org/t/p/w185";
+    public static String beginUrl = "http://image.tmdb.org/t/p/w342";
+    public static String big_beginUrl = "http://image.tmdb.org/t/p/w500";
 
     private int id;
 
@@ -31,17 +33,35 @@ public class Movie implements Parcelable{
 
     private int save_flag = 0;
 
+    private int runtime;
+
+
+    public Movie(){}
+
     protected Movie(Parcel in) {
         id = in.readInt();
         title = in.readString();
-        vote_average = in.readInt();
+        vote_average = in.readDouble();
         poster_path = in.readString();
         backdrop_path = in.readString();
         overview = in.readString();
         popularity = in.readDouble();
         release_date = in.readString();
         save_flag = in.readInt();
+        runtime = in.readInt();
     }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public static Movie from(Cursor cursor){
         int id = cursor.getInt(cursor.getColumnIndexOrThrow(
@@ -62,41 +82,36 @@ public class Movie implements Parcelable{
                 MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RELEASE_DATE));
         int save_flag = cursor.getInt(cursor.getColumnIndexOrThrow(
                 MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG));
+        int runtime = cursor.getInt(cursor.getColumnIndexOrThrow(
+                MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RUNTIME));
         return new Movie(id,title,vote_average,poster_path,backdrop_path,
-                overview,popularity,release_date,save_flag);
-    }
-
-    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(title);
-        dest.writeDouble(vote_average);
-        dest.writeString(poster_path);
-        dest.writeString(backdrop_path);
-        dest.writeString(overview);
-        dest.writeDouble(popularity);
-        dest.writeString(release_date);
-        dest.writeInt(save_flag);
+                overview,popularity,release_date,save_flag,runtime);
     }
 
 
+    public Movie(int id, String title, double vote_average, String poster_path, String backdrop_path, String overview, double popularity, String release_date, int save_flag,int runtime) {
+        this.id = id;
+        this.title = title;
+        this.vote_average = vote_average;
+        this.poster_path = poster_path;
+        this.backdrop_path = backdrop_path;
+        this.overview = overview;
+        this.popularity = popularity;
+        this.release_date = release_date;
+        this.save_flag = save_flag;
+        this.runtime = runtime;
+    }
+
+
+
+
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
+    }
 
     public int getSave_flag() {
         return save_flag;
@@ -170,15 +185,23 @@ public class Movie implements Parcelable{
         this.vote_average = vote_average;
     }
 
-    public Movie(int id, String title, double vote_average, String poster_path, String backdrop_path, String overview, double popularity, String release_date, int save_flag) {
-        this.id = id;
-        this.title = title;
-        this.vote_average = vote_average;
-        this.poster_path = poster_path;
-        this.backdrop_path = backdrop_path;
-        this.overview = overview;
-        this.popularity = popularity;
-        this.release_date = release_date;
-        this.save_flag = save_flag;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeDouble(vote_average);
+        dest.writeString(poster_path);
+        dest.writeString(backdrop_path);
+        dest.writeString(overview);
+        dest.writeDouble(popularity);
+        dest.writeString(release_date);
+        dest.writeInt(save_flag);
+        dest.writeInt(runtime);
     }
 }

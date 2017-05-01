@@ -58,7 +58,7 @@ public class LoaderProvider implements Serializable {
                 selectionArgs = null;
                 break;
             case COLLECTED:
-                selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG + "= ? ";
+                selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG + " = ? ";
                 selectionArgs = new String[]{String.valueOf(1)};
                 break;
         }

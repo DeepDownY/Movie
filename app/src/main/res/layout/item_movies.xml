@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ll_itemLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/background">
+
+        <ImageView
+            android:id="@+id/iv_movieImg"
+            android:layout_width="match_parent"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"/>
+
+        <LinearLayout
+            android:padding="@dimen/list_item_padding"
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+           <LinearLayout
+               android:paddingLeft="@dimen/nav_header_vertical_spacing"
+               android:gravity="center_vertical"
+               android:layout_width="0dp"
+               android:orientation="vertical"
+               android:layout_weight="3"
+               android:layout_height="match_parent">
+
+               <TextView
+                   android:id="@+id/tv_movieName"
+                   android:textSize="14sp"
+                   android:maxLines="1"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginBottom="2dp"/>
+
+               <TextView
+                   android:id="@+id/tv_movieVote"
+                   android:textSize="12sp"
+                   android:maxLines="1"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="2dp" />
+           </LinearLayout>
+
+            <ImageView
+                android:layout_gravity="center_vertical|end"
+                android:id="@+id/iv_collection"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/star_selector" />
+
+        </LinearLayout>
+
+    </LinearLayout>

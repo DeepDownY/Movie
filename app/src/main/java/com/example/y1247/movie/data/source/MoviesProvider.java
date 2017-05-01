@@ -30,7 +30,6 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, MoviesPersistenceContract.MovieEntry.TABLE_NAME,MOVIE);
         matcher.addURI(authority, MoviesPersistenceContract.MovieEntry.TABLE_NAME + "/*", MOVIE_ITEM);
 
-        Log.i("DSF", "getBaseMovieUri: "+  authority);
         return matcher;
     }
 
@@ -44,7 +43,6 @@ public class MoviesProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor mCursor;
-        Log.i("DSF", "query: ");
         switch (sUriMatcher.match(uri)){
             case MOVIE:
                 mCursor = moviesDBHelper.getReadableDatabase().query(
@@ -56,7 +54,6 @@ public class MoviesProvider extends ContentProvider {
                         null,
                         sortOrder
                 );
-                Log.i("DSF", "query: " + mCursor.moveToLast());
                 break;
             case MOVIE_ITEM:
                 String[] where = {uri.getLastPathSegment()};

@@ -16,8 +16,10 @@ import com.example.y1247.movie.data.source.LoaderProvider;
 import com.example.y1247.movie.data.source.MoviesDataSource;
 import com.example.y1247.movie.data.source.MoviesRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -31,6 +33,8 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     public static String TAG = "DSF";
 
     public final static int MOVIES_LOADER = 1;
+
+    private static boolean FIRSTLOAD = true;
 
     private int page = 1;
 
@@ -54,15 +58,16 @@ public class MoviesPresenter implements MoviesContract.Presenter,
         this.loaderProvider = checkNotNull(loaderProvider);
         this.movieFilter = checkNotNull(movieFilter);
         this.sortFilter = sortFilter;
-        Log.i(TAG, "MoviesPresenter: "+ sortFilter.getSortType());
         mMoviesView.setPresenter(this);
     }
 
     @Override
     public void start() {
+        if(FIRSTLOAD){
+            moviesRepository.refreshAll();
+            FIRSTLOAD = false;
+        }
         loaderManager.initLoader(MOVIES_LOADER,null,this);
-//        loadMovies(LoadSourceType.LOCAL);
-
     }
 
     @Override
@@ -82,7 +87,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void openMovieDetails(@NonNull Movie requestedMovie) {
-
+        mMoviesView.showMoviesDetail(requestedMovie);
     }
 
     @Override
@@ -92,7 +97,6 @@ public class MoviesPresenter implements MoviesContract.Presenter,
             loaderManager.restartLoader(MOVIES_LOADER,null,this);
         }else loaderManager.initLoader(MOVIES_LOADER,null,this);
 
-//        loadMovies(LoadSourceType.LOCAL);
     }
 
     @Override
@@ -103,13 +107,19 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @Override
     public void setSortType(SortFilter sortType) {
         this.sortFilter = sortType;
-        Log.i(TAG, "setSortType: " + sortFilter.getSortType());
         loaderManager.restartLoader(MOVIES_LOADER,null,this);
     }
 
     @Override
     public void collectMovie(Movie movie) {
+        Log.i(TAG, "collectMovie: ");
         moviesRepository.collectMovie(String.valueOf(movie.getId()));
+    }
+
+    @Override
+    public void unCollectMovie(Movie movie) {
+        Log.i(TAG, "unCollectMovie: ");
+        moviesRepository.unCollectMovie(String.valueOf(movie.getId()));
     }
 
     @Override
@@ -119,6 +129,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void onMoviesLoaded(List<Movie> movies) {
+//        Log.i(TAG, "onMoviesLoaded: "+ loaderManager.getLoader(MOVIES_LOADER).hashCode());
         if(loaderManager.getLoader(MOVIES_LOADER)==null){
             loaderManager.initLoader(MOVIES_LOADER,null,this);
         }else{
@@ -127,7 +138,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     }
 
     @Override
-    public void onDataLoaded(Cursor data) {
+    public void onDataLoaded(List<Movie> data) {
         mMoviesView.setLoadingIndicator(false);
         mMoviesView.showMovies(data);
     }
@@ -151,22 +162,25 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.i(TAG, "onCreateLoader: " + movieFilter.getFilterExtras());
         return loaderProvider.createFilteredMoviesLoader(movieFilter,sortFilter);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i("DSF", "onLoadFinished: ");
         if(data != null){
-            if(data.moveToLast()){
-                onDataLoaded(data);
-            }else {
-                onDataEmpty();
-            }
+            onDataLoaded(cursorToList(data));
         }else {
             onDataNotAvailable();
         }
+    }
+
+    private List<Movie> cursorToList(Cursor data) {
+        List<Movie> ls = new ArrayList<>();
+        while (data.moveToNext()){
+            Movie m = Movie.from(data);
+            ls.add(m);
+        }
+        return ls;
     }
 
     @Override
