@@ -84,6 +84,7 @@ public class Movie implements Parcelable{
                 MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG));
         int runtime = cursor.getInt(cursor.getColumnIndexOrThrow(
                 MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RUNTIME));
+//        Log.i("DSF", "from: " + runtime);
         return new Movie(id,title,vote_average,poster_path,backdrop_path,
                 overview,popularity,release_date,save_flag,runtime);
     }

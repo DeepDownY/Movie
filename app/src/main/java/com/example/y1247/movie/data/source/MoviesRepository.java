@@ -1,12 +1,10 @@
 package com.example.y1247.movie.data.source;
 
-import android.database.Cursor;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.example.y1247.movie.data.Movie;
+import com.example.y1247.movie.data.Review;
+import com.example.y1247.movie.data.Video;
 
 import java.util.List;
 
@@ -137,6 +135,9 @@ public class MoviesRepository implements MoviesDataSource{
                                 public void onMovieLoaded(Movie movie) {
                                     m.setPopularity(movie.getPopularity());
                                     m.setVote_average(movie.getVote_average());
+
+                                    m.setRuntime(movie.getRuntime());
+//                                    Log.i("DSF", "onMovieLoaded: "+m.getRuntime());
                                     mMoviesLocalDataSource.saveMovie(m);
                                 }
 
@@ -155,6 +156,37 @@ public class MoviesRepository implements MoviesDataSource{
                 },null,0);
             }
         }.run();
+    }
+
+    @Override
+    public void getReviews(@NonNull String id, @NonNull final GetReviewCallback callback) {
+        mMoviesRemoteDataSource.getReviews(id, new GetReviewCallback() {
+            @Override
+            public void onReviewLoaded(List<Review> reviews) {
+                callback.onReviewLoaded(reviews);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+    }
+
+    @Override
+    public void getVideos(@NonNull String id, @NonNull final GetVideoCallback callback) {
+        mMoviesRemoteDataSource.getVideos(id, new GetVideoCallback() {
+            @Override
+            public void onVideoLoaded(List<Video> videos) {
+                callback.onVideoLoaded(videos);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+
     }
 
     public interface LoadDataCallback {

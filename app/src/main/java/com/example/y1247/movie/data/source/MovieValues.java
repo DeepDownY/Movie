@@ -20,6 +20,7 @@ public class MovieValues {
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_OVERVIEW,movie.getOverview());
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_POPULARITY,movie.getPopularity());
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RELEASE_DATE,movie.getRelease_date());
+        values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_RUNTIME,movie.getRuntime());
         return values;
     }
 }

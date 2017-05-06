@@ -64,6 +64,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @Override
     public void start() {
         if(FIRSTLOAD){
+            //打开应用时进行内容更新
             moviesRepository.refreshAll();
             FIRSTLOAD = false;
         }

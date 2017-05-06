@@ -1,48 +1,76 @@
 package com.example.y1247.movie.movie;
 
-import android.util.Log;
-
 import com.example.y1247.movie.data.Movie;
 import com.example.y1247.movie.data.source.MoviesDataSource;
-import com.example.y1247.movie.data.source.MoviesRepository;
+import com.example.y1247.movie.data.Review;
+import com.example.y1247.movie.data.Video;
+
+import java.util.List;
 
 /**
  * Created by y1247 on 2017/4/30.
  */
 
-public class MoviePresenter implements MovieContract.Presenter {
+public class MoviePresenter implements MovieContract.Presenter,MoviesDataSource.GetReviewCallback,MoviesDataSource.GetVideoCallback{
 
     private static final String TAG = "MoviePresenter";
 
-    Movie movie;
+    private Movie movie;
 
-    MoviesDataSource dataSource ;
+    String id;
 
-    MovieContract.View mMovieView;
+    private MoviesDataSource movieRepository ;
+
+    private MovieContract.View mMovieView;
 
     public MoviePresenter(Movie movie,MoviesDataSource dataSource, MovieContract.View mMovieView) {
         this.movie = movie;
-        this.dataSource = dataSource;
+        this.movieRepository = dataSource;
         this.mMovieView = mMovieView;
+        this.id = String.valueOf(movie.getId());
+        mMovieView.setPresenter(this);
     }
 
     @Override
     public void start() {
 
+        mMovieView.showMovie(movie);
     }
 
     @Override
     public void collectMovie(Movie movie) {
-        Log.i(TAG, "collectMovie: ");
+        movieRepository.collectMovie(id);
     }
 
     @Override
-    public void uncollectMovie(Movie movie) {
-        Log.i(TAG, "uncollectMovie: ");
+    public void unCollectMovie(Movie movie) {
+        movieRepository.unCollectMovie(id);
     }
 
     @Override
-    public void loadMore(String id) {
+    public void loadMoreVideos(Movie movie) {
+        movieRepository.getVideos(String.valueOf(this.movie.getId()),this);
+    }
+
+    @Override
+    public void loadMoreReviews(Movie movie) {
+        movieRepository.getReviews(String.valueOf(this.movie.getId()),this);
+    }
+
+    @Override
+    public void onReviewLoaded(List<Review> reviews) {
+        mMovieView.showMoreReviews(reviews);
+        mMovieView.hideButton();
+    }
+
+    @Override
+    public void onVideoLoaded(List<Video> videos) {
+        mMovieView.showMoreVideos(videos);
+        mMovieView.hideButton();
+    }
+
+    @Override
+    public void onDataNotAvailable() {
 
     }
 }

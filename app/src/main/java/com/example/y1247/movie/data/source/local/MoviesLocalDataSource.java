@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.y1247.movie.data.Movie;
 import com.example.y1247.movie.data.source.LoadSourceType;
@@ -65,10 +66,11 @@ public class MoviesLocalDataSource implements MoviesDataSource {
 
     @Override
     public void saveMovies(@NonNull List<Movie> movies) {
-        for (Movie temp:movies) {
-            saveMovie(temp);
+        if(movies!=null) {
+            for (Movie temp : movies) {
+                saveMovie(temp);
+            }
         }
-
     }
 
     @Override
@@ -108,6 +110,16 @@ public class MoviesLocalDataSource implements MoviesDataSource {
 
     @Override
     public void refreshAll() {
+
+    }
+
+    @Override
+    public void getReviews(@NonNull String id, @NonNull GetReviewCallback callback) {
+
+    }
+
+    @Override
+    public void getVideos(@NonNull String id, @NonNull GetVideoCallback callback) {
 
     }
 }

@@ -2,6 +2,7 @@ package com.example.y1247.movie.movies;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -12,6 +13,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.graphics.Palette;
@@ -61,7 +64,6 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
 
     private MoviesAdapter adapter;
 
-//    private MovieCursorAdapter adapter;
 
     private SharedPreferences.Editor editor;
 
@@ -70,7 +72,6 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
     @Override
     public void onResume() {
         super.onResume();
-//        mPresenter.start();
     }
 
     ItemListener itemListener = new ItemListener() {
@@ -129,7 +130,6 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.movies_frag,container,false);
-
 
         rv_Movies = (RecyclerView) root.findViewById(R.id.movies_list);
         mNoMovieView = (LinearLayout) root.findViewById(R.id.noMovies);
@@ -480,7 +480,14 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
             holder.rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mPresenter.openMovieDetails(movie);
+                    Intent intent = new Intent(context,MovieActivity.class);
+                    String transitionName = context.getString(R.string.transition_album_cover);
+
+                    ActivityOptionsCompat compat = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(getActivity(),v.findViewById(R.id.iv_movieImg),transitionName);
+
+                    intent.putExtra(MovieActivity.INTENT_EXTRA,movie);
+                    ActivityCompat.startActivity(getActivity(),intent,compat.toBundle());
                 }
             });
         }

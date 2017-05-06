@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -58,10 +59,12 @@ public class MovieActivity extends AppCompatActivity {
 
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(movie.getId()==1){
+        if(movie.getSave_flag()==1){
             fab.setImageResource(R.drawable.star);
         } else fab.setImageResource(R.drawable.star_outline);
-//        Log.i("dsf", "onCreate: "+ movie.getId());
+
+        Log.i("DSF", "onCreate: " + movie.getSave_flag());
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +75,7 @@ public class MovieActivity extends AppCompatActivity {
 
                 } else {
                     fab.setImageResource(R.drawable.star_outline);
-                    mPresenter.uncollectMovie(movie);
+                    mPresenter.unCollectMovie(movie);
                     movie.setSave_flag(0);
                 }
             }
@@ -89,6 +92,11 @@ public class MovieActivity extends AppCompatActivity {
 
     public static void StarActivity(Context context, Movie movie){
         Intent intent = new Intent(context,MovieActivity.class);
+        String transitionName = context.getString(R.string.transition_album_cover);
+//        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(context,
+//                albumCoverImageView,   // The view which starts the transition
+//                transitionName    // The transitionName of the view we’re transitioning to
+//        );
         intent.putExtra(INTENT_EXTRA,movie);
         context.startActivity(intent);
     }

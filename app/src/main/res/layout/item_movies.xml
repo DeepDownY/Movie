@@ -15,7 +15,8 @@
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"/>
+            android:src="@mipmap/ic_launcher"
+            android:transitionName="@string/transition_album_cover"/>
 
         <LinearLayout
             android:padding="@dimen/list_item_padding"

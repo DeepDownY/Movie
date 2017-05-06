@@ -1,9 +1,10 @@
 package com.example.y1247.movie.data.source;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.example.y1247.movie.data.Movie;
+import com.example.y1247.movie.data.Review;
+import com.example.y1247.movie.data.Video;
 
 import java.util.List;
 
@@ -26,6 +27,22 @@ public interface MoviesDataSource {
         void onDataNotAvailable();
     }
 
+    interface GetReviewCallback{
+
+        void onReviewLoaded(List<Review> reviews);
+
+        void onDataNotAvailable();
+    }
+
+    interface GetVideoCallback{
+
+        void onVideoLoaded(List<Video> videos);
+
+        void onDataNotAvailable();
+    }
+
+
+
     void getMovies(@NonNull GetMoviesCallback callback, LoadSourceType extras,int page);
 
     void getMovie(@NonNull String id,@NonNull GetMovieCallback callback);
@@ -41,4 +58,8 @@ public interface MoviesDataSource {
     void deleteAllMovies();
 
     void refreshAll();
+
+    void getReviews(@NonNull String id,@NonNull GetReviewCallback callback);
+
+    void getVideos(@NonNull String id,@NonNull GetVideoCallback callback);
 }
