@@ -11,7 +11,7 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField 'String', 'APIKEY', '"82ac141a7f9d0ce50e1a989082577229"'
+        buildConfigField 'String', 'APIKEY', '""'
     }
     buildTypes {
         release {
