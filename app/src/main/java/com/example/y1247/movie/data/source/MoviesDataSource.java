@@ -13,28 +13,28 @@ import java.util.List;
  */
 
 public interface MoviesDataSource {
-    interface GetMoviesCallback{
+    interface GetMoviesCallback {
 
         void onMoviesLoaded(List<Movie> movies);
 
         void onDataNotAvailable();
     }
 
-    interface GetMovieCallback{
+    interface GetMovieCallback {
 
         void onMovieLoaded(Movie movie);
 
         void onDataNotAvailable();
     }
 
-    interface GetReviewCallback{
+    interface GetReviewCallback {
 
         void onReviewLoaded(List<Review> reviews);
 
         void onDataNotAvailable();
     }
 
-    interface GetVideoCallback{
+    interface GetVideoCallback {
 
         void onVideoLoaded(List<Video> videos);
 

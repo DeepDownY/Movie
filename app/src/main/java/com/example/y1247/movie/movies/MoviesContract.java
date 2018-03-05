@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 public interface MoviesContract {
-    interface View extends BaseView<Presenter>{
+    interface View extends BaseView<Presenter> {
         void setLoadingIndicator(boolean active);
 
         void showMovies(List<Movie> data);
@@ -34,7 +34,7 @@ public interface MoviesContract {
 
         void showMessage(String msg);
     }
-    interface Presenter extends BasePresenter{
+    interface Presenter extends BasePresenter {
 
         void loadMovies(LoadSourceType type);
 

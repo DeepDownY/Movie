@@ -12,12 +12,12 @@ public class SortFilter {
     private SortType sortType = SortType.RATE;
     private Bundle filterExtras;
 
-    protected SortFilter(Bundle extras){
+    protected SortFilter(Bundle extras) {
         this.filterExtras = extras;
         this.sortType = (SortType) extras.getSerializable(KEY_SORT_FILTER);
     }
 
-    public static SortFilter from(SortType sortType){
+    public static SortFilter from(SortType sortType) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(KEY_SORT_FILTER,sortType);
         return  new SortFilter(bundle);

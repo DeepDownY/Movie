@@ -35,7 +35,7 @@ public class MovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -59,7 +59,7 @@ public class MovieActivity extends AppCompatActivity {
 
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(movie.getSave_flag()==1){
+        if (movie.getSave_flag() == 1) {
             fab.setImageResource(R.drawable.star);
         } else fab.setImageResource(R.drawable.star_outline);
 
@@ -68,7 +68,7 @@ public class MovieActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(movie.getSave_flag()!=1){
+                if (movie.getSave_flag() != 1) {
                     fab.setImageResource(R.drawable.star);
                     mPresenter.collectMovie(movie);
                     movie.setSave_flag(1);
@@ -90,7 +90,7 @@ public class MovieActivity extends AppCompatActivity {
 
     }
 
-    public static void StarActivity(Context context, Movie movie){
+    public static void StarActivity(Context context, Movie movie) {
         Intent intent = new Intent(context,MovieActivity.class);
         String transitionName = context.getString(R.string.transition_album_cover);
 //        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(context,

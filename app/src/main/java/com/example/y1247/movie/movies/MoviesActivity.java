@@ -32,7 +32,7 @@ public class MoviesActivity extends AppCompatActivity {
 
 
         MoviesFragment moviesFragment = (MoviesFragment) getFragmentManager().findFragmentById(R.id.content_Frame);
-        if(moviesFragment == null){
+        if (moviesFragment == null) {
             moviesFragment = MoviesFragment.newInstance();
             ActivityUtils.addFragmentToActivity(
                     getFragmentManager(),moviesFragment,R.id.content_Frame
@@ -42,7 +42,7 @@ public class MoviesActivity extends AppCompatActivity {
         LoaderProvider loaderProvider = new LoaderProvider(this);
 
         MovieFilter movieFilter = MovieFilter.from(MoviesFilterType.ALL);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             MoviesFilterType filterType = (MoviesFilterType) savedInstanceState.getSerializable(CURRENT_FILTERING_KEY);
             movieFilter = MovieFilter.from(filterType);
         }
@@ -50,18 +50,18 @@ public class MoviesActivity extends AppCompatActivity {
 
         SharedPreferences setting = PreferenceManager.getDefaultSharedPreferences(this);
         SortFilter sortFilter;
-        if(setting!=null){
+        if (setting != null) {
 
             int temp = setting.getInt("SortType",SortType.RATE.ordinal());
 
-            if(temp==SortType.RATE.ordinal()){
+            if (temp == SortType.RATE.ordinal()) {
                 sortFilter = SortFilter.from(SortType.RATE);
                 moviesFragment.setLoadflag(LoadSourceType.RATE.ordinal());
             } else {
                 sortFilter = SortFilter.from(SortType.POP);
                 moviesFragment.setLoadflag(LoadSourceType.POP.ordinal());
             }
-        }else{
+        } else {
             sortFilter = SortFilter.from(SortType.POP);
             moviesFragment.setLoadflag(LoadSourceType.POP.ordinal());
         }

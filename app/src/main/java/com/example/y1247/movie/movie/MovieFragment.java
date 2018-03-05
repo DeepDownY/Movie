@@ -83,10 +83,9 @@ public class MovieFragment extends Fragment implements MovieContract.View {
         tv_introduce.setText(movie.getOverview());
         tv_movieDate.setText(movie.getRelease_date());
         tv_movieRate.setText(movie.getVote_average() + temp);
-        if(movie.getRuntime()!=0){
+        if (movie.getRuntime() != 0) {
             tv_runtime.setText(String.valueOf(movie.getRuntime())+ " minute");
-        }
-        else tv_runtime.setText(" ");
+        } else tv_runtime.setText(" ");
 
         Picasso.with(getActivity())
                 .load(Movie.beginUrl + movie.getPoster_path())
@@ -97,7 +96,6 @@ public class MovieFragment extends Fragment implements MovieContract.View {
     public void showMoreVideos(List<Video> videos) {
         for (Video v:videos) {
             VideoView v_temp = new VideoView(getActivity());
-//            v_temp.setVideo(v);
             ll_videos.addView(v_temp);
         }
     }

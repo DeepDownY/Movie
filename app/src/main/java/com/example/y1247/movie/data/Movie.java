@@ -11,7 +11,7 @@ import com.example.y1247.movie.data.source.local.MoviesPersistenceContract;
  * Created by y1247 on 2017/3/7.
  */
 
-public class Movie implements Parcelable{
+public class Movie implements Parcelable {
     public static String beginUrl = "http://image.tmdb.org/t/p/w342";
     public static String big_beginUrl = "http://image.tmdb.org/t/p/w500";
 
@@ -63,7 +63,7 @@ public class Movie implements Parcelable{
         }
     };
 
-    public static Movie from(Cursor cursor){
+    public static Movie from(Cursor cursor) {
         int id = cursor.getInt(cursor.getColumnIndexOrThrow(
                 MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID));
         String title = cursor.getString(cursor.getColumnIndexOrThrow(

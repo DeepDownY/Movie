@@ -43,7 +43,7 @@ public class MoviesProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor mCursor;
-        switch (sUriMatcher.match(uri)){
+        switch (sUriMatcher.match(uri)) {
             case MOVIE:
                 mCursor = moviesDBHelper.getReadableDatabase().query(
                         MoviesPersistenceContract.MovieEntry.TABLE_NAME,
@@ -78,12 +78,13 @@ public class MoviesProvider extends ContentProvider {
     @Override
     public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
-        switch (match){
+        switch (match) {
             case MOVIE:
                 return MoviesPersistenceContract.CONTENT_MOVIE_TYPE;
             case MOVIE_ITEM:
                 return MoviesPersistenceContract.CONTENT_MOVIE_ITEM_TYPE;
             default:
+                Log.i("DSF", "getType: 1111");
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
     }
@@ -95,7 +96,7 @@ public class MoviesProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         Uri returnUri;
 
-        switch (match){
+        switch (match) {
             case MOVIE:
                 Cursor exists = db.query(
                         MoviesPersistenceContract.MovieEntry.TABLE_NAME,
@@ -107,21 +108,21 @@ public class MoviesProvider extends ContentProvider {
                         null
                 );
 
-                if (exists.moveToLast()){
+                if (exists.moveToLast()) {
                     long _id = db.update(
                             MoviesPersistenceContract.MovieEntry.TABLE_NAME,
                             values,
                             MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID + " = ?",
                             new String[]{values.getAsString(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID)}
                     );
-                    if(_id > 0){
+                    if(_id > 0) {
                         returnUri = MoviesPersistenceContract.MovieEntry.buildMoviesUriWith(_id);
                     }else {
                         throw new android.database.SQLException("Failed to insert row into " + uri);
                     }
                 } else {
                     long _id = db.insert(MoviesPersistenceContract.MovieEntry.TABLE_NAME,null,values);
-                    if(_id > 0){
+                    if(_id > 0) {
                         returnUri = MoviesPersistenceContract.MovieEntry.buildMoviesUriWith(_id);
                     } else {
                         throw new android.database.SQLException("Failed to insert row into " + uri);

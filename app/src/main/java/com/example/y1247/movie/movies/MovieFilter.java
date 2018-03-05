@@ -12,12 +12,12 @@ public class MovieFilter {
     private MoviesFilterType moviesFilterType = MoviesFilterType.ALL;
     private Bundle filterExtras;
 
-    protected MovieFilter(Bundle extras){
+    protected MovieFilter(Bundle extras) {
         this.filterExtras = extras;
         this.moviesFilterType = (MoviesFilterType) extras.getSerializable(KEY_MOVIE_FILTER);
     }
 
-    public static MovieFilter from(MoviesFilterType moviesFilterType){
+    public static MovieFilter from(MoviesFilterType moviesFilterType) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(KEY_MOVIE_FILTER,moviesFilterType);
         return  new MovieFilter(bundle);

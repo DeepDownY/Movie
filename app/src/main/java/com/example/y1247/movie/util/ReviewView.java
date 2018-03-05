@@ -30,7 +30,7 @@ public class ReviewView extends LinearLayout {
         tv_content = (TextView) findViewById(R.id.tv_content);
     }
 
-    public void setReview(Review review){
+    public void setReview(Review review) {
         tv_content.setText(review.getContent());
         tv_author.setText(review.getAuthor());
     }

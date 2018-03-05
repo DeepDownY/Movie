@@ -37,7 +37,7 @@ public class VideoView extends LinearLayout {
         tv_VideoName = (TextView) findViewById(R.id.tv_videoName);
     }
 
-    public void setVideo(Video video){
+    public void setVideo(Video video) {
         this.video = video;
         tv_VideoName.setText(video.getName());
     }

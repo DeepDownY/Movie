@@ -8,7 +8,7 @@ import com.example.y1247.movie.BaseView;
  */
 
 public class LoadContract {
-    interface View extends BaseView<Presenter>{
+    interface View extends BaseView<Presenter> {
 
     }
 

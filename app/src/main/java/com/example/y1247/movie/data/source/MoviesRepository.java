@@ -8,13 +8,14 @@ import com.example.y1247.movie.data.Video;
 
 import java.util.List;
 
-import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 /**
  * Created by y1247 on 2017/3/12.
  */
 
-public class MoviesRepository implements MoviesDataSource{
+public class MoviesRepository implements MoviesDataSource {
     private static MoviesRepository INSTANCE = null;
 
     private final MoviesDataSource mMoviesLocalDataSource;
@@ -22,14 +23,14 @@ public class MoviesRepository implements MoviesDataSource{
     private final MoviesDataSource mMoviesRemoteDataSource;
 
     private MoviesRepository(@NonNull MoviesDataSource mMoviesRemoteDataSource,
-                            @NonNull MoviesDataSource mMoviesLocalDataSource){
+                            @NonNull MoviesDataSource mMoviesLocalDataSource) {
         this.mMoviesLocalDataSource = mMoviesLocalDataSource;
         this.mMoviesRemoteDataSource = mMoviesRemoteDataSource;
     }
 
     public static MoviesRepository getInstance(MoviesDataSource mMoviesRemoteDataSource,
-                                                MoviesDataSource mMoviesLocalDataSource){
-        if(INSTANCE == null){
+                                                MoviesDataSource mMoviesLocalDataSource) {
+        if (INSTANCE == null) {
             INSTANCE = new MoviesRepository(mMoviesRemoteDataSource,mMoviesLocalDataSource);
         }
         return INSTANCE;
@@ -42,7 +43,7 @@ public class MoviesRepository implements MoviesDataSource{
     @Override
     public void getMovies(@NonNull final GetMoviesCallback callback, LoadSourceType extras, int page) {
 
-        switch (extras){
+        switch (extras) {
             case LOCAL:
                 break;
             case POP:
@@ -124,12 +125,10 @@ public class MoviesRepository implements MoviesDataSource{
         new Thread(){
             @Override
             public void run() {
-//                Log.i("DSF", "run: ");
                 mMoviesLocalDataSource.getMovies(new GetMoviesCallback() {
                     @Override
                     public void onMoviesLoaded(List<Movie> movies) {
                         for (final Movie m: movies) {
-//                            Log.i("DSF", "onMoviesLoaded: " + m.getTitle());
                             mMoviesRemoteDataSource.getMovie(String.valueOf(m.getId()), new GetMovieCallback() {
                                 @Override
                                 public void onMovieLoaded(Movie movie) {
@@ -137,7 +136,6 @@ public class MoviesRepository implements MoviesDataSource{
                                     m.setVote_average(movie.getVote_average());
 
                                     m.setRuntime(movie.getRuntime());
-//                                    Log.i("DSF", "onMovieLoaded: "+m.getRuntime());
                                     mMoviesLocalDataSource.saveMovie(m);
                                 }
 

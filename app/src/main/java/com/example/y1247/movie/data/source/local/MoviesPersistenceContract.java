@@ -29,7 +29,7 @@ public class MoviesPersistenceContract {
         return Uri.parse(CONTENT_SCHEME + CONTENT_MOVIE_ITEM_TYPE + SEPARATOR + movieId);
     }
 
-    public static abstract class MovieEntry implements BaseColumns{
+    public static abstract class MovieEntry implements BaseColumns {
         public static final String TABLE_NAME = "movie";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_TITLE = "title";
@@ -56,16 +56,16 @@ public class MoviesPersistenceContract {
                 MovieEntry.COLUMN_NAME_RUNTIME
         };
 
-        public static  Uri buildMoviesUriWith(long id){
+        public static  Uri buildMoviesUriWith(long id) {
             return ContentUris.withAppendedId(CONTENT_MOVIE_URI,id);
         }
 
-        public static Uri buildMoviesUriWith(String id){
+        public static Uri buildMoviesUriWith(String id) {
             Uri uri = CONTENT_MOVIE_URI.buildUpon().appendPath(id).build();
             return uri;
         }
 
-        public static Uri buildMoviesUri(){
+        public static Uri buildMoviesUri() {
 
             return CONTENT_MOVIE_URI.buildUpon().build();
         }

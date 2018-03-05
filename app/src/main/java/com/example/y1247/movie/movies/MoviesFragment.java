@@ -245,7 +245,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 //                adapter.swapCursor(null);
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.filter_all:
                         mPresenter.setFiltering(MovieFilter.from(MoviesFilterType.ALL));
                         break;
@@ -462,13 +462,15 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
             String temp = String.valueOf(movie.getVote_average()) + "/ 10";
             holder.tv_MovieName.setText(movie.getTitle());
             holder.tv_movieVote.setText(temp);
-            if(movie.getSave_flag()==1){
+            if (movie.getSave_flag() == 1) {
                 holder.imageButton.setActivated(true);
-            } else holder.imageButton.setActivated(false);
+            } else {
+                holder.imageButton.setActivated(false);
+            }
             holder.imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(movie.getSave_flag()==1){
+                    if(movie.getSave_flag() == 1) {
                         v.setActivated(false);
                         itemListener.onUnCollectClick(movie);
                     }else {
@@ -494,7 +496,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View{
 
         @Override
         public int getItemCount() {
-            if(ls==null) return 0;
+            if(ls == null) return 0;
             return ls.size();
         }
 

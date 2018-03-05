@@ -3,9 +3,7 @@ package com.example.y1247.movie.data.source.local;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.example.y1247.movie.data.Movie;
 import com.example.y1247.movie.data.source.LoadSourceType;
@@ -15,7 +13,8 @@ import com.example.y1247.movie.data.source.MoviesDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 /**
  * Created by y1247 on 2017/3/8.
@@ -27,13 +26,13 @@ public class MoviesLocalDataSource implements MoviesDataSource {
 
     private ContentResolver mContentResolver;
 
-    private MoviesLocalDataSource(@NonNull ContentResolver contentResolver){
+    private MoviesLocalDataSource(@NonNull ContentResolver contentResolver) {
         checkNotNull(contentResolver);
         mContentResolver = contentResolver;
     }
 
-    public static MoviesLocalDataSource getInstance(@NonNull ContentResolver contentResolver){
-        if(INSTANCE ==null){
+    public static MoviesLocalDataSource getInstance(@NonNull ContentResolver contentResolver) {
+        if (INSTANCE == null) {
             INSTANCE = new MoviesLocalDataSource(contentResolver);
         }
         return INSTANCE;
@@ -43,8 +42,8 @@ public class MoviesLocalDataSource implements MoviesDataSource {
     public void getMovies(@NonNull GetMoviesCallback callback, LoadSourceType extras,int page) {
         List<Movie> ls = new ArrayList<>();
         Cursor c = mContentResolver.query(MoviesPersistenceContract.MovieEntry.buildMoviesUri(),null,null,null,null);
-        if(c!=null){
-            while (c.moveToNext()){
+        if (c != null) {
+            while (c.moveToNext()) {
                 ls.add(Movie.from(c));
             }
         }
@@ -66,10 +65,8 @@ public class MoviesLocalDataSource implements MoviesDataSource {
 
     @Override
     public void saveMovies(@NonNull List<Movie> movies) {
-        if(movies!=null) {
-            for (Movie temp : movies) {
-                saveMovie(temp);
-            }
+        for (Movie temp : movies) {
+            saveMovie(temp);
         }
     }
 

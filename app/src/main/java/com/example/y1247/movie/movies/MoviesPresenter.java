@@ -19,8 +19,8 @@ import com.example.y1247.movie.data.source.MoviesRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 /**
  * Created by y1247 on 2017/3/13.
@@ -28,7 +28,7 @@ import static com.google.api.client.repackaged.com.google.common.base.Preconditi
 
 public class MoviesPresenter implements MoviesContract.Presenter,
         MoviesDataSource.GetMoviesCallback,
-        LoaderManager.LoaderCallbacks<Cursor>,MoviesRepository.LoadDataCallback{
+        LoaderManager.LoaderCallbacks<Cursor>,MoviesRepository.LoadDataCallback {
 
     public static String TAG = "DSF";
 
@@ -63,7 +63,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void start() {
-        if(FIRSTLOAD){
+        if (FIRSTLOAD) {
             //打开应用时进行内容更新
             moviesRepository.refreshAll();
             FIRSTLOAD = false;
@@ -74,7 +74,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @Override
     public void loadMovies(LoadSourceType type) {
         mMoviesView.setLoadingIndicator(true);
-        switch (type){
+        switch (type) {
             case POP:
                 moviesRepository.getMovies(this,LoadSourceType.POP,page);
                 break;
@@ -94,9 +94,11 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @Override
     public void setFiltering(MovieFilter movieFilter) {
         this.movieFilter = movieFilter;
-        if(loaderManager.getLoader(MOVIES_LOADER)!=null){
+        if (loaderManager.getLoader(MOVIES_LOADER) != null) {
             loaderManager.restartLoader(MOVIES_LOADER,null,this);
-        }else loaderManager.initLoader(MOVIES_LOADER,null,this);
+        } else {
+            loaderManager.initLoader(MOVIES_LOADER,null,this);
+        }
 
     }
 
@@ -130,10 +132,9 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void onMoviesLoaded(List<Movie> movies) {
-//        Log.i(TAG, "onMoviesLoaded: "+ loaderManager.getLoader(MOVIES_LOADER).hashCode());
-        if(loaderManager.getLoader(MOVIES_LOADER)==null){
+        if (loaderManager.getLoader(MOVIES_LOADER) == null) {
             loaderManager.initLoader(MOVIES_LOADER,null,this);
-        }else{
+        } else {
             loaderManager.restartLoader(MOVIES_LOADER,null,this);
         }
     }
@@ -168,16 +169,16 @@ public class MoviesPresenter implements MoviesContract.Presenter,
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data != null){
+        if (data != null) {
             onDataLoaded(cursorToList(data));
-        }else {
+        } else {
             onDataNotAvailable();
         }
     }
 
     private List<Movie> cursorToList(Cursor data) {
         List<Movie> ls = new ArrayList<>();
-        while (data.moveToNext()){
+        while (data.moveToNext()) {
             Movie m = Movie.from(data);
             ls.add(m);
         }

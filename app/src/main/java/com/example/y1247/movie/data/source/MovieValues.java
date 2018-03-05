@@ -10,7 +10,7 @@ import com.example.y1247.movie.data.source.local.MoviesPersistenceContract;
  */
 
 public class MovieValues {
-    public static ContentValues from(Movie movie){
+    public static ContentValues from(Movie movie) {
         ContentValues values = new ContentValues();
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_ID,movie.getId());
         values.put(MoviesPersistenceContract.MovieEntry.COLUMN_NAME_TITLE,movie.getTitle());

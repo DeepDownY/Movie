@@ -11,7 +11,8 @@ import java.util.List;
  * Created by y1247 on 2017/4/30.
  */
 
-public class MoviePresenter implements MovieContract.Presenter,MoviesDataSource.GetReviewCallback,MoviesDataSource.GetVideoCallback{
+public class MoviePresenter implements MovieContract.Presenter,
+        MoviesDataSource.GetReviewCallback,MoviesDataSource.GetVideoCallback {
 
     private static final String TAG = "MoviePresenter";
 
