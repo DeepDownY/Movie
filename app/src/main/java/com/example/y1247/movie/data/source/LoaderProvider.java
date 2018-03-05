@@ -14,7 +14,8 @@ import com.example.y1247.movie.movies.SortType;
 
 import java.io.Serializable;
 
-import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 /**
  * Created by y1247 on 2017/3/8.
@@ -38,21 +39,22 @@ public class LoaderProvider implements Serializable {
         this.mContext = checkNotNull(context, "context cannot be null");
     }
 
-    public Loader<Cursor> createFilteredMoviesLoader(MovieFilter movieFilter, SortFilter sortFilter){
+    public Loader<Cursor> createFilteredMoviesLoader(MovieFilter movieFilter, SortFilter sortFilter) {
         String selection = null;
         String sortType = null;
         String[] selectionArgs = null;
 
-        switch (sortFilter.getSortType()){
+        switch (sortFilter.getSortType()) {
             case POP:
                 sortType = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_POPULARITY + "  DESC";
                 break;
             case RATE:
                 sortType = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_VOTE_AVERAGE + "  DESC";
                 break;
+            default:
         }
 
-        switch (movieFilter.getMoviesFilterType()){
+        switch (movieFilter.getMoviesFilterType()) {
             case ALL:
                 selection = null;
                 selectionArgs = null;
@@ -61,12 +63,9 @@ public class LoaderProvider implements Serializable {
                 selection = MoviesPersistenceContract.MovieEntry.COLUMN_NAME_SAVE_FLAG + " = ? ";
                 selectionArgs = new String[]{String.valueOf(1)};
                 break;
+            default:
         }
 
-//        if(flag==0){
-//            Looper.prepare();
-//            flag = 1;
-//        }
         return new CursorLoader(
                 mContext,
                 MoviesPersistenceContract.MovieEntry.buildMoviesUri(),
@@ -74,7 +73,12 @@ public class LoaderProvider implements Serializable {
         );
     }
 
-    public Loader<Cursor> createMovieLoader(String movieId){
+    /**
+     * 创建loader对象
+     * @param movieId movieId
+     * @return
+     */
+    public Loader<Cursor> createMovieLoader(String movieId) {
         return new CursorLoader(mContext, MoviesPersistenceContract.MovieEntry.buildMoviesUriWith(movieId),
                 null,
                 null,

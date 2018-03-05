@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.example.y1247.movie"
         minSdkVersion 21
@@ -11,7 +11,7 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField 'String', 'APIKEY', '""'
+        buildConfigField 'String', 'APIKEY', '"82ac141a7f9d0ce50e1a989082577229"'
     }
     buildTypes {
         release {

@@ -51,6 +51,7 @@ public class MovieActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(movie.getTitle());
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         MovieFragment fragment = new MovieFragment();
         ActivityUtils.addFragmentToActivity(getFragmentManager(),fragment,R.id.movie_content);

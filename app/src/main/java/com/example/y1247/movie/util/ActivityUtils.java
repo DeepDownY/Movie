@@ -21,8 +21,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.support.annotation.NonNull;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import static com.google.api.client.repackaged.com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This provides methods to help Activities load their UI.

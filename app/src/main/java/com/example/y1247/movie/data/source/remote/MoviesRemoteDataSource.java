@@ -1,7 +1,6 @@
 package com.example.y1247.movie.data.source.remote;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -20,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,17 +35,18 @@ import okhttp3.Response;
  * Created by y1247 on 2017/3/11.
  */
 
-public class MoviesRemoteDataSource implements MoviesDataSource{
-    private int x = 1;
+public class MoviesRemoteDataSource implements MoviesDataSource {
     private static final String API_KEY = BuildConfig.APIKEY;
     private static final String URL = "https://api.themoviedb.org/3/movie/";
     private static final String POP = "popular";
     private static final String RATE = "top_rated";
 
+    private static final int TIME_OUT = 10;
+
     private final OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10,TimeUnit.SECONDS)
-                .readTimeout(10,TimeUnit.SECONDS)
+                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .writeTimeout(TIME_OUT,TimeUnit.SECONDS)
+                .readTimeout(TIME_OUT,TimeUnit.SECONDS)
                 .build();
 
     private static MoviesRemoteDataSource INSTANCE;
@@ -52,6 +54,10 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     private MoviesRemoteDataSource() {
     }
 
+    /**
+     * 获取单例
+     * @return 单例远程仓库
+     */
     public static MoviesRemoteDataSource getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MoviesRemoteDataSource();
@@ -62,21 +68,18 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     @Override
     public void getMovies(@NonNull GetMoviesCallback callback, LoadSourceType extras,int page) {
         String url = null;
-        switch (extras){
+        switch (extras) {
             case POP:
-                url = URL + POP +
-                        "?page=" + String.valueOf(page) +
-                        "&api_key=" + API_KEY;
+                url = URL + POP
+                        + "?page=" + String.valueOf(page)
+                        + "&api_key=" + API_KEY;
                 break;
             case RATE:
-                url = URL + RATE +
-                        "?page=" + String.valueOf(page) +
-                        "&api_key=" + API_KEY;
+                url = URL + RATE + "?page=" + String.valueOf(page) + "&api_key=" + API_KEY;
                 break;
             case LOCAL:
                 return;
         }
-        Log.i("DSF", "getMovie: " + url);
         getJsonFromServer(callback,url);
     }
 
@@ -84,23 +87,10 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     public void getMovie(@NonNull String id, @NonNull final GetMovieCallback callback) {
         String url = URL + id + "?api_key=" + API_KEY;
 
-//        Log.i("DSF", "getMovie: " + url);
 
         final Movie m = new Movie();
         Request request = new Request.Builder().url(url).build();
-        Handler handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case -1:
-                        callback.onDataNotAvailable();
-                        break;
-                    case 1:
-                        callback.onMovieLoaded((Movie) msg.obj);
-                        break;
-                }
-            }
-        };
+        MovieHandler handler = new MovieHandler(callback);
 
         final Message msg = handler.obtainMessage();
 
@@ -176,19 +166,7 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     private void getJsonFromServer(final GetReviewCallback callback, String url) {
         Request request = new Request.Builder().url(url).build();
 
-        Handler handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case -1:
-                        callback.onDataNotAvailable();
-                        break;
-                    case 1:
-                        callback.onReviewLoaded((List<Review>) msg.obj);
-                        break;
-                }
-            }
-        };
+        ReviewHandler handler = new ReviewHandler(callback);
 
         final Message msg = handler.obtainMessage();
 
@@ -219,19 +197,7 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     private void getJsonFromServer(final GetMoviesCallback callback, String url) {
         Request request = new Request.Builder().url(url).build();
 
-        Handler handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case -1:
-                        callback.onDataNotAvailable();
-                        break;
-                    case 1:
-                        callback.onMoviesLoaded((List<Movie>) msg.obj);
-                        break;
-                }
-            }
-        };
+        MoviesHandler handler = new MoviesHandler(callback);
 
         final Message msg = handler.obtainMessage();
 
@@ -262,19 +228,7 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     private void getJsonFromServer(final GetVideoCallback callback, String url) {
         Request request = new Request.Builder().url(url).build();
 
-        Handler handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case -1:
-                        callback.onDataNotAvailable();
-                        break;
-                    case 1:
-                        callback.onVideoLoaded((List<Video>) msg.obj);
-                        break;
-                }
-            }
-        };
+        VideoHandler handler = new VideoHandler(callback);
 
         final Message msg = handler.obtainMessage();
 
@@ -284,7 +238,6 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
                 msg.what = -1;
                 msg.sendToTarget();
             }
-
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -303,7 +256,7 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
     }
 
 
-    private List<Movie> JsonToList(JSONObject json){
+    private List<Movie> JsonToList(JSONObject json) {
         List<Movie> ls;
         JSONArray jsonArray;
 
@@ -321,7 +274,7 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
         return null;
     }
 
-    private List<Review> JsonToReviewList(JSONObject json){
+    private List<Review> JsonToReviewList(JSONObject json) {
         List<Review> ls;
         JSONArray jsonArray;
 
@@ -338,7 +291,7 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
         return null;
     }
 
-    private List<Video> JsonToVideoList(JSONObject json){
+    private List<Video> JsonToVideoList(JSONObject json) {
         List<Video> ls;
         JSONArray jsonArray;
 
@@ -353,6 +306,90 @@ public class MoviesRemoteDataSource implements MoviesDataSource{
         }
 
         return null;
+    }
+
+    private static class VideoHandler extends Handler {
+
+        SoftReference<GetVideoCallback> reference ;
+
+        VideoHandler(GetVideoCallback callback) {
+            this.reference = new SoftReference<>(callback);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case -1:
+                    reference.get().onDataNotAvailable();
+                    break;
+                case 1:
+                    reference.get().onVideoLoaded((List<Video>) msg.obj);
+                    break;
+            }
+        }
+    }
+
+    private static class ReviewHandler extends Handler {
+
+        SoftReference<GetReviewCallback> reference ;
+
+        ReviewHandler(GetReviewCallback callback) {
+            this.reference = new SoftReference<GetReviewCallback>(callback);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case -1:
+                    reference.get().onDataNotAvailable();
+                    break;
+                case 1:
+                    reference.get().onReviewLoaded((List<Review>) msg.obj);
+                    break;
+            }
+        }
+    }
+
+    private static class MoviesHandler extends Handler {
+
+        SoftReference<GetMoviesCallback> reference ;
+
+        MoviesHandler(GetMoviesCallback callback) {
+            this.reference = new SoftReference<GetMoviesCallback>(callback);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case -1:
+                    reference.get().onDataNotAvailable();
+                    break;
+                case 1:
+                    reference.get().onMoviesLoaded((List<Movie>) msg.obj);
+                    break;
+            }
+        }
+    }
+
+    private static class MovieHandler extends Handler {
+
+        GetMovieCallback callback ;
+
+        MovieHandler(GetMovieCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case -1:
+                    callback.onDataNotAvailable();
+                    break;
+                case 1:
+                    callback.onMovieLoaded((Movie) msg.obj);
+                    break;
+            }
+        }
     }
 
 }
