@@ -102,6 +102,9 @@ public class MovieFragment extends Fragment implements MovieContract.View {
 
     @Override
     public void showMoreReviews(List<Review> reviews) {
+        if (getActivity() == null) {
+            return;
+        }
         for (Review re:reviews) {
             ReviewView r = new ReviewView(getActivity());
             r.setReview(re);

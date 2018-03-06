@@ -65,8 +65,10 @@ public class MoviesLocalDataSource implements MoviesDataSource {
 
     @Override
     public void saveMovies(@NonNull List<Movie> movies) {
-        for (Movie temp : movies) {
-            saveMovie(temp);
+        if (movies != null) {
+            for (Movie temp : movies) {
+                saveMovie(temp);
+            }
         }
     }
 
